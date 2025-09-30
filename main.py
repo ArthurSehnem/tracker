@@ -56,16 +56,23 @@ if dados:
     df_mes = df[df["data"].apply(lambda x: x.month == hoje.month and x.year == hoje.year)]
 
     if not df_mes.empty:
-        # Gráfico de contagem por parecer
-        fig = px.histogram(
-            df_mes,
-            x="data",
+        # Gráfico de barras: quantidade de cada parecer
+        contagem = df_mes["parecer"].value_counts().reset_index()
+        contagem.columns = ["parecer", "qtd"]
+
+        fig = px.bar(
+            contagem,
+            x="parecer",
+            y="qtd",
             color="parecer",
-            title="Distribuição dos pareceres no mês",
-            text_auto=True
+            text="qtd",
+            title="Quantidade de pareceres no mês"
         )
+        fig.update_traces(textposition="outside")
+
         st.plotly_chart(fig, use_container_width=True)
 
+        # Analítico: tabela de registros do mês
         st.dataframe(df_mes.sort_values("data", ascending=False))
     else:
         st.info("Ainda não há registros para este mês.")
